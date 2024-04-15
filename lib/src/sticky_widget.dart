@@ -11,14 +11,18 @@ class StickyWidget extends StatefulWidget {
   /// used by StickyWidget to detect scrolling. Same ScrollController must be attached to your Scrollable.
   final ScrollController _controller;
 
+  final int scrollPositionIndex;
+
   /// An optional callback function, which gets called on every scroll. It receives scrolloffset as parameter which can be used to animate the StickyWidget.
   final Function(double)? callback;
   final Widget child;
+
   StickyWidget(
       {Key? key,
       required StickyPosition initialPosition,
       required StickyPosition finalPosition,
       required ScrollController controller,
+      this.scrollPositionIndex = 0,
       required this.child,
       this.callback})
       : assert(
@@ -60,7 +64,7 @@ class _StickyWidgetState extends State<StickyWidget> {
     _computedBottom = widget._initialPosition.bottom;
     _computedLeft = widget._initialPosition.left;
     _computedRight = widget._initialPosition.right;
-    _scrollAxis = widget._controller.position.axis;
+    _scrollAxis = widget._controller.positions.elementAt(widget.scrollPositionIndex).axis;
 
     widget._controller.addListener(updatePosition);
     super.initState();
@@ -75,15 +79,15 @@ class _StickyWidgetState extends State<StickyWidget> {
   void updatePosition() {
     if (_scrollAxis == Axis.vertical) {
       if (widget._initialPosition.top != null) {
-        updateTop(widget._controller.position.pixels);
+        updateTop(widget._controller.positions.elementAt(widget.scrollPositionIndex).pixels);
       } else {
-        updateBottom(widget._controller.position.pixels);
+        updateBottom(widget._controller.positions.elementAt(widget.scrollPositionIndex).pixels);
       }
     } else {
       if (widget._initialPosition.left != null) {
-        updateLeft(widget._controller.position.pixels);
+        updateLeft(widget._controller.positions.elementAt(widget.scrollPositionIndex).pixels);
       } else {
-        updateRight(widget._controller.position.pixels);
+        updateRight(widget._controller.positions.elementAt(widget.scrollPositionIndex).pixels);
       }
     }
   }
